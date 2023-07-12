@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synonym Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            padding: 12px;
+            background-color: black;
+            font-family: Raleway, sans-serif;
+        }
+
+        .fa-search {
+            color: white;
+        }
+
+        .container {
+            margin: auto;
+            box-shadow: 0 4px 12px 0 rgb(255, 255, 255);
+            transition: 0.3s;
+            width: 60%;
+            max-width: 600px;
+            padding: 2%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        input {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 4px;
+            margin-right: 4px;
+            width: 75%;
+        }
+
+        button {
+            border: 1px solid transparent;
+            background-color: #21c480;
+            border-radius: 5px;
+            padding: 4px;
+            width: 20%;
+            margin-left: 4px;
+        }
+
+        button:hover {
+            background-color: #1da86e;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        .no-results {
+            font-style: italic;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Synonym Finder</h1>
+        <div class="input-wrapper">
+            <input type="text" id="userInput">
+            <button id="btn" type="button"><i class="fa fa-search"></i></button>
+        </div>
+
+        <ul></ul>
+    </div>
+    <script>
+        function getSyn(word) {
+            if (word === '') {
+                $("ul").html("<li class='no-results'>No input provided...</li>");
+                return;
+            }
+
+            $.getJSON(`https://api.datamuse.com/words?rel_syn=${word}`, function(data) {
+                $("ul").empty();
+
+                if (data.length > 0) {
+                    data.forEach(wordData => {
+                        const wordInfo = `<li>${wordData.word} -> ${wordData.score}</li>`;
+                        $("ul").append(wordInfo);
+                    });
+                } else {
+                    $("ul").html("<li class='no-results'>No results found...</li>");
+                }
+            });
+        }
+        
+        $("#userInput").keydown(function (e) {
+            if (e.keyCode == 13) {
+                $('#btn').click();
+            }
+        });
+
+        $("#btn").on("click", function () {
+            const input = $("#userInput").val(); 
+            getSyn(input); 
+        });
+    </script>
+</body>
+</html>
